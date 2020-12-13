@@ -135,6 +135,36 @@ int searchname(const Cloth* cloth, char* name) {
 	else return 0;
 }
 
+void Sort_Price(Node** head2Ptr) {
+	Node* head = *head2Ptr;
+	if (head -> next == NULL) return;
+
+	Node* head2 = (Node*)malloc(sizeof(Node));
+	head2 -> next = NULL;
+
+	while (head->next) {
+		Node* least_node = head->next;
+
+		Node* c_node = least_node;
+		int c_price = c_node->cloth.price;
+
+		while (c_node->next) {
+			Node* n_node = c_node->next;
+			int n_price = n_node->cloth.price;
+
+			if (n_price < c_price) {
+				c_price = n_price;
+				least_node = n_node;
+			}
+			c_node = n_node;
+		}
+		addNode(head2, least_node->cloth);
+		deleteNode(head, least_node->cloth.name);
+	}
+	free(head);
+	*head2Ptr = head2;
+}
+
 void readCloth(Node* head_ptr, void(*add)(Node* head, Cloth cloth)) {
 	FILE* fp = NULL;
 
@@ -172,8 +202,8 @@ void saveCloth(Node* head) {
 }
 
 int main() {
-	Node head;
-	head.next = NULL;
+	Node* head = (Node*)malloc(sizeof(Node));
+	head->next = NULL;
 
 	int n;
 
@@ -187,7 +217,8 @@ int main() {
 		printf("4. 옷 검색\n");
 		printf("5. 저장된 목록 불러오기\n");
 		printf("6. 현재 목록 저장\n");
-		printf("7. 프로그램 종료\n");
+		printf("7. 목록 가격순 정렬\n");
+		printf("8. 종료\n");
 		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
 		printf("번호를 입력해주세요 : ");
 		scanf("%d", &n);
@@ -195,36 +226,41 @@ int main() {
 
 		if (n == 1)
 		{
-			Print_List(&head, Clothinfo);
+			Print_List(head, Clothinfo);
 		}
 
 		else if (n == 2)
 		{
-			addCloth(&head, addNode);
+			addCloth(head, addNode);
 		}
 
 		else if (n == 3)
 		{
-			del_Cloth(&head, deleteNode);
+			del_Cloth(head, deleteNode);
 		}
 
 		else if (n == 4)
 		{
 			printf("옷 이름을 입력하시오 : ");
-			find_Cloth(&head, searchname, Clothinfo);
+			find_Cloth(head, searchname, Clothinfo);
 		}
 
 		else if (n == 5)
 		{
-			readCloth(&head, addNode);
+			readCloth(head, addNode);
 		}
 
 		else if (n == 6)
 		{
-			saveCloth(&head);
+			saveCloth(head);
 		}
 
 		else if (n == 7)
+		{
+			Sort_Price(&head);
+		}
+
+		else if (n == 8)
 		{
 			break;
 		}
